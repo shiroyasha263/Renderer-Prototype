@@ -1,35 +1,45 @@
 #pragma once
 
-#include "../math/math.h"
+#include "../math/vecmath.h"
 #include <limits>
 
-template <size_t N, typename T>
+template <typename T, size_t N>
 struct Ray {
-	
 	static constexpr float epsilon = T(0.0001);
 	static constexpr float infinity = std::numeric_limits<T>::infinity();
 
-	Vec<N, T> o;
-	Vec<N, T> d;
-	T mint;
-	T maxt;
+	Vec<T, N> origin;
+	Vec<T, N> direction;
+	T		  minT;
+	T		  maxT;
 
-	Ray() : mint(epsilon), maxt(inifinity) {}
+	Ray() : minT(epsilon), maxT(infinity) {
+	
+	}
 
-	Ray(const Vec<N, T>& o, const Vec<N, T>& d, T mint = Ray::epsilon, T maxt = Ray::infinity) :
-		o(o), d(d), mint(mint), maxt(maxt) {}
+	Ray(const Vec<T, N>& origin, const Vec<T, N>& direction, T minT = Ray::epsilon, T maxT = Ray::infinity) :
+		origin(origin), direction(direction), minT(minT), maxT(maxT) {
 
-	Ray(const Ray& ray, T mint, T maxt) : o(ray.o), d(ray.d), mint(mint), maxt(maxt) {}
+	}
 
-	Vec<N, T> operator()(T t) const {
-		return o + t * d;
+	Ray(const Ray<T, N>& ray, T minT = Ray::epsilon, T maxT = Ray::infinity) :
+		origin(ray.origin), direction(ray.direction), minT(minT), maxT(maxT) {
+
+	}
+
+	Vec<T, N> operator()(T t) const {
+		return origin + t * direction;
+	}
+
+	Vec<T, N> at(T t) const {
+		return origin + t * direction;
 	}
 };
 
-template<T>
-using Ray2 = Ray<2, T>;
-template<T>
-using Ray3 = Ray<3, T>;
+template <typename T>
+using Ray2 = Ray<T, 2>;
+template <typename T>
+using Ray3 = Ray<T, 3>;
 
 using Ray2f = Ray2<float>;
 using Ray2d = Ray2<double>;

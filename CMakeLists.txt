@@ -37,7 +37,7 @@ include_directories(${PROJECT_SOURCE_DIR}/lib/tinyexr/)
 include_directories(${PROJECT_SOURCE_DIR}/lib/tinyobjloader/)
 include_directories(${PROJECT_SOURCE_DIR}/lib/nlohmann/)
 
-file(GLOB_RECURSE _source_list ${PROJECT_SOURCE_DIR}/source/*.cpp ${PROJECT_SOURCE_DIR}/source/*.hpp ${PROJECT_SOURCE_DIR}/scenes/*.json)
+file(GLOB_RECURSE _source_list ${PROJECT_SOURCE_DIR}/source/*.cpp ${PROJECT_SOURCE_DIR}/source/*.hpp ${PROJECT_SOURCE_DIR}/scenes/*.json ${PROJECT_SOURCE_DIR}/source/*.cc)
 
 foreach(_source IN ITEMS ${_source_list})
     get_filename_component(_source_path "${_source}" PATH)

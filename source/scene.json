@@ -1,0 +1,73 @@
+{
+	"camera": [
+		{
+			"aspect_ratio": 1.77,
+			"image_width": 400,
+			"samples_per_pixel": 100,
+			"max_depth": 50,
+			"vfov": 20,
+			"lookfrom": [-2, 2, 1],
+			"lookat": [0, 0, -1],
+			"vup": [0, 1, 0],
+			"defocus_angle": 10.0,
+			"focus_dist": 3.4
+		}
+	],
+
+	"materials": {
+		"material_ground": {
+			"type": "lambertian",
+			"albedo": [0.8, 0.8, 0.0]
+		},
+		"material_center": {
+			"type": "lambertian",
+			"albedo": [1.0, 0.2, 0.5]
+		},
+		"material_left": {
+			"type": "dielectric",
+			"refraction_index": 1.5
+		},
+		"material_bubble": {
+			"type": "dielectric",
+			"refraction_index": 0.66
+		},
+		"material_right": {
+			"type": "metal",
+			"albedo": [0.8, 0.6, 0.2],
+			"fuzz": 1.0
+		}
+	},
+
+	"surfaces": [
+		{
+			"type": "sphere",
+			"center": [0.0, -100.5, -1.0],
+			"radius": 100.0,
+			"material": "material_ground"
+		},
+		{
+			"type": "sphere",
+			"center": [0.0, 0.0, -1.2],
+			"radius": 0.5,
+			"material": "material_center"
+		},
+		{
+			"type": "sphere",
+			"center": [-1.0, 0.0, -1.0],
+			"radius": 0.5,
+			"material": "material_left"
+		},
+		{
+			"type": "sphere",
+			"center": [-1.0, 0.0, -1.0],
+			"radius": 0.4,
+			"material": "material_bubble"
+		},
+		{
+			"type": "sphere",
+			"center": [1.0, 0.0, -1.0],
+			"radius": 0.5,
+			"material": "material_right"
+		}
+	]
+}
