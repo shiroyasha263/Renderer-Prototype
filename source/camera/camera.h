@@ -111,21 +111,24 @@ private:
 							 + ((i + offset.x) * pixel_delta_u)
 							 + ((j + offset.y) * pixel_delta_v);
 		Vec3f ray_origin = (defocus_angle <= 0) ? center : defocus_disk_sample();
-		return Ray3f(ray_origin, pixel_sample - ray_origin);
+		Vec3f ray_direction = pixel_sample - ray_origin;
+		float ray_time = random_float();
+
+		return Ray3f(ray_origin, ray_direction, ray_time);
 	}
 
 	Vec3f sample_square() const {
 		return Vec3f(random_float() - 0.5f, random_float() - 0.5f, 0.f);
 	}
 
-	Color3f ray_color(const Ray3f& r, const surface& world, int depth) const {
+	Color3f ray_color(Ray3f& r, const surface& world, int depth) const {
 
 		if (depth <= 0)
 			return Color3f(0.f);
 
 		hit_record rec;
 
-		if (world.intersect(r, interval(epsilon, infinity), rec)) {
+		if (world.intersect(r, rec)) {
 			Ray3f scattered;
 			Color3f attenuation;
 			if (rec.mat->scatter(r, rec, attenuation, scattered))

@@ -10,20 +10,21 @@ struct Ray {
 
 	Vec<T, N> origin;
 	Vec<T, N> direction;
+	float	  tm;
 	T		  minT;
 	T		  maxT;
 
-	Ray() : minT(epsilon), maxT(infinity) {
+	Ray() : minT(epsilon), maxT(infinity), tm(0) {
 	
 	}
 
-	Ray(const Vec<T, N>& origin, const Vec<T, N>& direction, T minT = Ray::epsilon, T maxT = Ray::infinity) :
-		origin(origin), direction(direction), minT(minT), maxT(maxT) {
+	Ray(const Vec<T, N>& origin, const Vec<T, N>& direction, float tm = 0.f, T minT = Ray::epsilon, T maxT = Ray::infinity) :
+		origin(origin), direction(direction), tm(tm), minT(minT), maxT(maxT) {
 
 	}
 
-	Ray(const Ray<T, N>& ray, T minT = Ray::epsilon, T maxT = Ray::infinity) :
-		origin(ray.origin), direction(ray.direction), minT(minT), maxT(maxT) {
+	Ray(const Ray<T, N>& ray, float tm = 0.f, T minT = Ray::epsilon, T maxT = Ray::infinity) :
+		origin(ray.origin), direction(ray.direction), tm(tm), minT(minT), maxT(maxT) {
 
 	}
 
@@ -34,7 +35,12 @@ struct Ray {
 	Vec<T, N> at(T t) const {
 		return origin + t * direction;
 	}
+
+	bool surrounds(float x) const {
+		return minT < x && maxT > x;
+	}
 };
+
 
 template <typename T>
 using Ray2 = Ray<T, 2>;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../common/common.h"
+#include "texture.h"
 
 class hit_record;
 
@@ -17,7 +18,8 @@ public:
 
 class lambertian : public material {
 public:
-	lambertian(const Color3f& albedo) : albedo(albedo) {}
+	lambertian(const Color3f& albedo) : tex(make_shared<solid_color>(albedo)) {}
+	lambertian(shared_ptr<texture> tex) : tex(tex) {}
 
 	bool scatter(const Ray3f& r_in, const hit_record& rec, Color3f& attenuation, Ray3f& scattered) const override {
 		Vec3f scatter_direction = rec.normal + random_Vec3f_unit_vector();
@@ -25,13 +27,13 @@ public:
 		if (near_zero(scatter_direction))
 			scatter_direction = rec.normal;
 
-		scattered = Ray3f(rec.point, scatter_direction);
-		attenuation = albedo;
+		scattered = Ray3f(rec.point, scatter_direction, r_in.tm);
+		attenuation = tex->value(rec.u, rec.v, rec.point);
 		return true;
 	}
 
 private:
-	Color3f albedo;
+	shared_ptr<texture> tex;
 };
 
 class metal : public material {
@@ -41,7 +43,7 @@ public:
 	bool scatter(const Ray3f& r_in, const hit_record& rec, Color3f& attenuation, Ray3f& scattered) const override {
 		Vec3f reflected = reflect(r_in.direction, rec.normal);
 		reflected = normalize(reflected) + fuzz * random_Vec3f_unit_vector();
-		scattered = Ray3f(rec.point, reflected);
+		scattered = Ray3f(rec.point, reflected, r_in.tm);
 		attenuation = albedo;
 		return (dot(scattered.direction, rec.normal) > 0);
 	}
@@ -71,7 +73,7 @@ public:
 		else
 			direction = refract(unit_direction, rec.normal, ri);
 
-		scattered = Ray3f(rec.point, direction);
+		scattered = Ray3f(rec.point, direction, r_in.tm);
 		return true;
 	}
 private:

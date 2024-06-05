@@ -15,7 +15,7 @@ using std::shared_ptr;
 using std::sqrt;
 using json = nlohmann::json;
 
-const float epsilon = 0.001;
+const float epsilon = 0.0001;
 const float infinity = std::numeric_limits<float>::infinity();
 const float pi = 3.1415926535897932385;
 
@@ -33,6 +33,10 @@ inline float random_float() {
 // Returns a real random number from [min, max)
 inline float random_float(float min, float max) {
 	return min + (max - min) * random_float();
+}
+
+inline int random_int(int min, int max) {
+	return int(random_float(min, max + 1.f));
 }
 
 #include "../math/vecmath.h"

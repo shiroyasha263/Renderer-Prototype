@@ -8,6 +8,11 @@ public:
 
 	interval(float min, float max) : min(min), max(max) {}
 
+	interval(const interval& a, const interval& b) {
+		min = a.min <= b.min ? a.min : b.min;
+		max = a.max >= b.max ? a.max : b.max;
+	}
+
 	bool contains(float x) const {
 		return min <= x && max >= x;
 	}
@@ -20,6 +25,15 @@ public:
 		if (x < min) return min;
 		if (x > max) return max;
 		return x;
+	}
+
+	interval expand(float delta) {
+		float padding = delta / 2.f;
+		return interval(min - padding, max + padding);
+	}
+
+	float size() {
+		return max - min;
 	}
 
 	static const interval empty, universe;

@@ -6,6 +6,7 @@
 #include "../surfaces/surface.h"
 #include "../surfaces/sphere.h"
 #include "../surfaces/surface_list.h"
+#include "../bvh/bvh.h"
 #include <map>
 
 class scene {
@@ -57,6 +58,9 @@ public:
                 std::clog << "Invalid Surface for Surface " << i << '\n';
             }
         }
+
+        world = surface_list(make_shared<bvh_node>(world));
+        std::clog << "Created a BVH structure from the world" << '\n';
     }
 
     void render() {
