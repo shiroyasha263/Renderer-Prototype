@@ -2,6 +2,7 @@
 
 #include "../common/common.h"
 #include "surface.h"
+#include "surface_list.h"
 
 class quad : public surface {
 public:
@@ -25,6 +26,7 @@ public:
 	aabb bounding_box() const override { return bbox; }
 
 	bool intersect(Ray3f& r, hit_record& rec) const override {
+
 		float denom = dot(normal, r.direction);
 
 		// No hit if the ray is parallel
@@ -76,3 +78,23 @@ private:
 	Vec3f normal;
 	float D;
 };
+
+inline shared_ptr<surface_list> box(const Vec3f& a, const Vec3f& b, shared_ptr<material> mat) {
+	shared_ptr<surface_list> faces = make_shared<surface_list>();
+
+	Vec3f min = Vec3f(fmin(a.x, b.x), fmin(a.y, b.y), fmin(a.z, b.z));
+	Vec3f max = Vec3f(fmax(a.x, b.x), fmax(a.y, b.y), fmax(a.z, b.z));
+
+	Vec3f dx = Vec3f(max.x - min.x, 0.f, 0.f);
+	Vec3f dy = Vec3f(0.f, max.y - min.y, 0.f);
+	Vec3f dz = Vec3f(0.f, 0.f, max.z - min.z);
+
+	faces->add(make_shared<quad>(Vec3f(min.x, min.y, max.z), dx, dy, mat)); // front
+	faces->add(make_shared<quad>(Vec3f(max.x, min.y, max.z), -dz, dy, mat)); // right
+	faces->add(make_shared<quad>(Vec3f(max.x, min.y, min.z), -dx, dy, mat)); // back
+	faces->add(make_shared<quad>(Vec3f(min.x, min.y, min.z), dz, dy, mat)); // left
+	faces->add(make_shared<quad>(Vec3f(min.x, max.y, max.z), dx, -dz, mat)); // top
+	faces->add(make_shared<quad>(Vec3f(min.x, min.y, min.z), dx, dz, mat)); // bottom
+
+	return faces;
+}

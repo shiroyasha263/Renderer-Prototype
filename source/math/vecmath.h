@@ -155,3 +155,52 @@ inline Vec3f random_Vec3f_in_unit_disk() {
 			return p;
 	}
 }
+
+inline Mat44f vector_translate(const Vec3f& v) {
+	return Mat44f(
+		{ 1.f, 0.f, 0.f, 0.f },
+		{ 0.f, 1.f, 0.f, 0.f },
+		{ 0.f, 0.f, 1.f, 0.f },
+		{ v.x, v.y, v.z, 1.f });
+}
+
+inline Mat44f rotate_along_x(float degrees) {
+	float theta = deg_to_rad(degrees);
+	float cos_theta = cos(theta);
+	float sin_theta = sin(theta);
+	return Mat44f(
+		{ 1.f, 0.f, 0.f, 0.f },
+		{ 0.f, cos_theta, sin_theta, 0.f },
+		{ 0.f, -sin_theta, cos_theta, 0.f },
+		{ 0.f, 0.f, 0.f, 1.f });
+}
+
+inline Mat44f rotate_along_y(float degrees) {
+	float theta = deg_to_rad(degrees);
+	float cos_theta = cos(theta);
+	float sin_theta = sin(theta);
+	return Mat44f(
+		{ cos_theta, 0.f, -sin_theta, 0.f },
+		{ 0.f, 1.f, 0.f, 0.f },
+		{ sin_theta, 0.f, cos_theta, 0.f },
+		{ 0.f, 0.f, 0.f, 1.f });
+}
+
+inline Mat44f rotate_along_z(float degrees) {
+	float theta = deg_to_rad(degrees);
+	float cos_theta = cos(theta);
+	float sin_theta = sin(theta);
+	return Mat44f(
+		{ cos_theta, sin_theta, 0.f, 0.f },
+		{ -sin_theta, cos_theta, 0.f, 0.f },
+		{ 0.f, 0.f, 1.f, 0.f },
+		{ 0.f, 0.f, 0.f, 1.f });
+}
+
+inline Mat44f scale(const Vec3f& s) {
+	return Mat44f(
+		{ s.x, 0.f, 0.f, 0.f },
+		{ 0.f, s.y, 0.f, 0.f },
+		{ 0.f, 0.f, s.z, 0.f },
+		{ 0.f, 0.f, 0.f, 1.f });
+}

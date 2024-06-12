@@ -6,21 +6,67 @@
 class triangle : public surface {
 public:
 
-	triangle(const Vec3f& A, const Vec3f& B, const Vec3f& C, shared_ptr<material> mat)
-		: A(A), B(B), C(C), mat(mat) {
-		u = B - A;
-		v = C - A;
-		Vec3f n = cross(u, v);
+	triangle(const Vec3f& v0, const Vec3f& v1, const Vec3f& v2, shared_ptr<material> mat)
+		: v0(v0), v1(v1), v2(v2), mat(mat) {
+		
+		v10 = v1 - v0;
+		v20 = v2 - v0;
+		Vec3f n = cross(v10, v20);
 		normal = normalize(n);
-		D = dot(normal, A);
+		D = dot(normal, v0);
+		w = n / dot(n, n);
+
+		n0 = normal;
+		n1 = normal;
+		n2 = normal;
+
+		t0 = Vec2f(0.f);
+		t1 = Vec2f(1.f, 0.f);
+		t2 = Vec2f(0.f, 1.f);
+
+		set_bounding_box();
+	}
+
+	triangle(const Vec3f& v0, const Vec3f& v1, const Vec3f& v2,
+		const Vec3f& n0, const Vec3f& n1, const Vec3f& n2,
+		shared_ptr<material> mat) :
+		v0(v0), v1(v1), v2(v2), n0(normalize(n0)), n1(normalize(n1)), n2(normalize(n2)), mat(mat) {
+		
+		v10 = v1 - v0;
+		v20 = v2 - v0;
+		Vec3f n = cross(v10, v20);
+		normal = normalize(n);
+		D = dot(normal, v0);
+		w = n / dot(n, n);
+
+		t0 = Vec2f(0.f);
+		t1 = Vec2f(1.f, 0.f);
+		t2 = Vec2f(0.f, 1.f);
+
+		set_bounding_box();
+	}
+
+	triangle(const Vec3f& v0, const Vec3f& v1, const Vec3f& v2,
+		const Vec3f& n0, const Vec3f& n1, const Vec3f& n2,
+		const Vec2f& t0, const Vec2f& t1, const Vec2f& t2,
+		shared_ptr<material> mat) :
+		v0(v0), v1(v1), v2(v2),
+		n0(normalize(n0)), n1(normalize(n1)), n2(normalize(n2)),
+		t0(t0), t1(t1), t2(t2), mat(mat) {
+		
+		v10 = v1 - v0;
+		v20 = v2 - v0;
+		Vec3f n = cross(v10, v20);
+		normal = normalize(n);
+		D = dot(normal, v0);
 		w = n / dot(n, n);
 
 		set_bounding_box();
 	}
 
 	virtual void set_bounding_box() {
-		aabb bbox_diag_1 = aabb(A, A + u);
-		aabb bbox_diag_2 = aabb(A, A + v);
+		aabb bbox_diag_1 = aabb(v0, v0 + v10);
+		aabb bbox_diag_2 = aabb(v0, v0 + v20);
 		bbox = aabb(bbox_diag_1, bbox_diag_2);
 	}
 
@@ -40,9 +86,9 @@ public:
 
 		// Determine the hit point lies within the planar shape using its plane coordinates.
 		Vec3f point_of_intersection = r.at(t);
-		Vec3f planar_hit_point = point_of_intersection - A;
-		float alpha = dot(w, cross(planar_hit_point, v));
-		float beta = dot(w, cross(u, planar_hit_point));
+		Vec3f planar_hit_point = point_of_intersection - v0;
+		float alpha = dot(w, cross(planar_hit_point, v20));
+		float beta = dot(w, cross(v10, planar_hit_point));
 
 		if (!is_interior(alpha, beta, rec))
 			return false;
@@ -50,7 +96,7 @@ public:
 		rec.t = t;
 		rec.point = point_of_intersection;
 		rec.mat = mat;
-		rec.set_face_normal(r, normal);
+		rec.set_face_normal(r, rec.normal);
 		r.maxT = t;
 
 		return true;
@@ -64,18 +110,25 @@ public:
 		if (a <= 0 || b <= 0 || !unit_interval.contains(a + b))
 			return false;
 
-		rec.u = a;
-		rec.v = b;
+		rec.u = t0.x * (1 - a - b) + t1.x * a + t2.x * b;
+		rec.v = t0.y * (1 - a - b) + t1.y * a + t2.y * b;
+		rec.normal = n0 * (1 - a - b) + n1 * a + n2 * b;
 		return true;
 	}
 private:
-	Vec3f A;
-	Vec3f B;
-	Vec3f C;
-	Vec3f u;
-	Vec3f v;
-	Vec3f w;
+	Vec3f v0;
+	Vec3f v1;
+	Vec3f v2;
+	Vec3f n0;
+	Vec3f n1;
+	Vec3f n2;
+	Vec2f t0;
+	Vec2f t1;
+	Vec2f t2;
 	shared_ptr<material> mat;
+	Vec3f v10;
+	Vec3f v20;
+	Vec3f w;
 	aabb bbox;
 	Vec3f normal;
 	float D;

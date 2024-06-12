@@ -41,3 +41,11 @@ public:
 
 const interval interval::empty = interval(+infinity, -infinity);
 const interval interval::universe = interval(-infinity, +infinity);
+
+interval operator+ (const interval& ival, float displacement) {
+	return interval(ival.min + displacement, ival.max + displacement);
+}
+
+interval operator+ (float displacement, const interval& ival) {
+	return ival + displacement;
+}

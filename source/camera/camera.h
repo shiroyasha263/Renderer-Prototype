@@ -11,6 +11,7 @@ public:
 	int image_width = 100;
 	int samples_per_pixel = 10;
 	int max_depth = 10;
+	Color3f background = Color3f(0.f);
 
 	float vfov = 90;
 	Vec3f lookfrom = Vec3f(0.f);
@@ -128,17 +129,19 @@ private:
 
 		hit_record rec;
 
-		if (world.intersect(r, rec)) {
-			Ray3f scattered;
-			Color3f attenuation;
-			if (rec.mat->scatter(r, rec, attenuation, scattered))
-				return attenuation * ray_color(scattered, world, depth - 1);
-			return Color3f(0.f);
-		}
+		if (!world.intersect(r, rec))
+			return background;
 
-		Vec3f unit_direction = normalize(r.direction);
-		float a = 0.5f * (unit_direction.y + 1.0f);
-		return (1.0f - a) * Color3f(1.0f) + a * Color3f(0.5f, 0.7f, 1.0f);
+		Ray3f scattered;
+		Color3f attenuation;
+		Color3f color_from_emission = rec.mat->emitted(rec.u, rec.v, rec.point);
+
+		if (!rec.mat->scatter(r, rec, attenuation, scattered))
+			return color_from_emission;
+
+		Color3f color_from_scatter = attenuation * ray_color(scattered, world, depth - 1);
+
+		return color_from_emission + color_from_scatter;
 	}
 
 	Vec3f defocus_disk_sample() const {

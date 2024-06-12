@@ -23,8 +23,8 @@ struct Ray {
 
 	}
 
-	Ray(const Ray<T, N>& ray, float tm = 0.f, T minT = Ray::epsilon, T maxT = Ray::infinity) :
-		origin(ray.origin), direction(ray.direction), tm(tm), minT(minT), maxT(maxT) {
+	Ray(const Ray<T, N>& ray, T minT = Ray::epsilon, T maxT = Ray::infinity) :
+		origin(ray.origin), direction(ray.direction), tm(ray.tm), minT(minT), maxT(maxT) {
 
 	}
 

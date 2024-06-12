@@ -14,6 +14,12 @@ public:
 	) const {
 		return false;
 	}
+
+	virtual Color3f emitted(
+		float u, float v, const Vec3f& p
+	) const {
+		return Color3f(0.f);
+	}
 };
 
 class lambertian : public material {
@@ -84,4 +90,32 @@ private:
 		r0 = r0 * r0;
 		return r0 + (1.f - r0) * pow((1.f - cosine), 5);
 	}
+};
+
+class diffuse_light : public material {
+public:
+	diffuse_light(shared_ptr<texture> tex) : tex(tex) {}
+	diffuse_light(const Color3f& emit) : tex(make_shared<solid_color>(emit)) {}
+
+	Color3f emitted(float u, float v, const Vec3f& p) const override {
+		return tex->value(u, v, p);
+	}
+
+private:
+	shared_ptr<texture> tex;
+};
+
+class isotropic : public material {
+public:
+	isotropic(const Color3f& albedo) : tex(make_shared<solid_color>(albedo)) {}
+	isotropic(shared_ptr<texture> tex) : tex(tex) {}
+
+	bool scatter(const Ray3f& r_in, const hit_record& rec, Color3f& attenuation, Ray3f& scattered) const override {
+		scattered = Ray3f(rec.point, random_Vec3f_unit_vector(), r_in.tm);
+		attenuation = tex->value(rec.u, rec.v, rec.point);
+		return true;
+	}
+
+private:
+	shared_ptr<texture> tex;
 };

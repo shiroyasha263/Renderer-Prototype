@@ -68,6 +68,17 @@ public:
 			return y.size() > z.size() ? 1 : 2;
 	}
 
+	aabb enclose(const Vec3f& v) {
+		x.min = fmin(x.min, v.x);
+		x.max = fmax(x.max, v.x);
+		
+		y.min = fmin(y.min, v.y);
+		y.max = fmax(y.max, v.y);
+		
+		z.min = fmin(z.min, v.z);
+		z.max = fmax(z.max, v.z);
+	}
+
 	static const aabb empty, universe;
 
 private:
@@ -81,3 +92,11 @@ private:
 
 const aabb aabb::empty = aabb(interval::empty, interval::empty, interval::empty);
 const aabb aabb::universe = aabb(interval::universe, interval::universe, interval::universe);
+
+aabb operator+(const aabb& bbox, const Vec3f& displacement) {
+	return aabb(bbox.x + displacement.x, bbox.y + displacement.y, bbox.z + displacement.z);
+}
+
+aabb operator+(const Vec3f& displacement, const aabb& bbox) {
+	return bbox + displacement;
+}
